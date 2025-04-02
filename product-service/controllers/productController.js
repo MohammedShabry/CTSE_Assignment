@@ -7,7 +7,7 @@ exports.getAllProducts = async (req, res) => {
   } catch (err) {
     res.status(500).send('Server Error');
   }
-};//op
+};
 
 exports.createProduct = async (req, res) => {
   const { name, price, description } = req.body;
