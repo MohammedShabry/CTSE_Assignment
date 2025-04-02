@@ -5,5 +5,5 @@ const ProductSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   description: { type: String, required: true }
 });
-
+//uiu
 module.exports = mongoose.model('Product', ProductSchema);
