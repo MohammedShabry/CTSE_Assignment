@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
-};
+};//fyrtyr
 
 exports.getProfile = async (req, res) => {
   const user = await User.findById(req.user.userId).select('-password');
