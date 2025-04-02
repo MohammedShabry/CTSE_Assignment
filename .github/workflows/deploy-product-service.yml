@@ -18,7 +18,7 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t shabry967/product-service:latest .
+        docker build -t shabry967/product-service:latest ./product-service
         docker push shabry967/product-service:latest
 
     - name: Log in to AWS CLI
