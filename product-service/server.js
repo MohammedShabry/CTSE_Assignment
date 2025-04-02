@@ -8,5 +8,5 @@ const app = express();
 app.use(express.json());
 app.use('/products', productRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Product Service running on port ${PORT}`));
