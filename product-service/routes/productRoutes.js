@@ -4,5 +4,5 @@ const router = express.Router();
 
 router.get('/', getAllProducts);
 router.post('/', createProduct);
-
+//oo
 module.exports = router;
