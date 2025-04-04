@@ -42,7 +42,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-  docker-scan:
+    docker-scan:
     name: Docker Security Scan
     runs-on: ubuntu-latest
 
@@ -65,13 +65,11 @@ jobs:
         run: docker build -t product-service:latest .
 
       - name: Run Snyk Docker Scan (User Service)
-        run: |
-          docker save user-service:latest | snyk container test --file=user-service/Dockerfile --platform=linux/amd64
+        run: snyk container test user-service:latest --file=user-service/Dockerfile
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk Docker Scan (Product Service)
-        run: |
-          docker save product-service:latest | snyk container test --file=product-service/Dockerfile --platform=linux/amd64
+        run: snyk container test product-service:latest --file=product-service/Dockerfile
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
