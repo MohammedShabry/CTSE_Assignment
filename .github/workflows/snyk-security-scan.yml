@@ -42,7 +42,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-    docker-scan:
+  docker-scan:
     name: Docker Security Scan
     runs-on: ubuntu-latest
 
