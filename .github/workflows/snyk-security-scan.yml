@@ -35,14 +35,14 @@ jobs:
         run: npm install
         working-directory: product-service
 
-      - name: Run Snyk Scan on User Service
-        run: snyk test
+      - name: Monitor User Service in Snyk Dashboard
+        run: snyk monitor
         working-directory: user-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Run Snyk Scan on Product Service
-        run: snyk test
+      - name: Monitor Product Service in Snyk Dashboard
+        run: snyk monitor
         working-directory: product-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -71,14 +71,14 @@ jobs:
         run: docker build -t product-service:latest .
         working-directory: product-service
 
-      - name: Run Snyk Docker Scan (User Service)
-        run: snyk container test user-service:latest --file=Dockerfile
+      - name: Monitor User Service Docker Image in Snyk Dashboard
+        run: snyk container monitor user-service:latest --file=Dockerfile
         working-directory: user-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Run Snyk Docker Scan (Product Service)
-        run: snyk container test product-service:latest --file=Dockerfile
+      - name: Monitor Product Service Docker Image in Snyk Dashboard
+        run: snyk container monitor product-service:latest --file=Dockerfile
         working-directory: product-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
