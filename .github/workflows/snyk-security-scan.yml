@@ -28,18 +28,22 @@ jobs:
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # Scan User Service
+      # Scan User Service and push results to Snyk Dashboard
       - name: Run Snyk Security Scan (User Service)
         run: |
           cd user-service
           snyk test --severity-threshold=high
+          snyk monitor  # Sends results to Snyk Dashboard
 
-      # Scan Product Service
+      # Scan Product Service and push results to Snyk Dashboard
       - name: Run Snyk Security Scan (Product Service)
         run: |
           cd product-service
           snyk test --severity-threshold=high
+          snyk monitor  # Sends results to Snyk Dashboard
 
-      # Scan Docker Image (if applicable)
+      # Scan Docker Image and push results to Snyk Dashboard
       - name: Run Snyk Container Security Scan
-        run: snyk container test shabry967/user-auth-service:latest
+        run: |
+          snyk container test shabry967/user-auth-service:latest
+          snyk container monitor shabry967/user-auth-service:latest  # Pushes results to Snyk Dashboard
