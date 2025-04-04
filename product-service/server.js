@@ -1,17 +1,12 @@
 const express = require('express');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
 require('dotenv').config();
 
 connectDB();
 const app = express();
 app.use(express.json());
-app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
 
-// Health Check Route
-app.get('/auth', (req, res) => {
-    res.status(200).send('User service is healthy');
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`Product Service running on port ${PORT}`));
