@@ -2,6 +2,9 @@ name: CI/CD with Security Scans
 
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   security-scan:
     name: Snyk Security Scan
@@ -21,24 +24,26 @@ jobs:
 
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Install Dependencies (User Service)
-        working-directory: user-service
         run: npm install
+        working-directory: user-service
 
       - name: Install Dependencies (Product Service)
-        working-directory: product-service
         run: npm install
+        working-directory: product-service
 
       - name: Run Snyk Scan on User Service
-        working-directory: user-service
         run: snyk test
+        working-directory: user-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk Scan on Product Service
-        working-directory: product-service
         run: snyk test
+        working-directory: product-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -55,21 +60,25 @@ jobs:
 
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Build Docker Image (User Service)
-        working-directory: user-service
         run: docker build -t user-service:latest .
+        working-directory: user-service
 
       - name: Build Docker Image (Product Service)
-        working-directory: product-service
         run: docker build -t product-service:latest .
+        working-directory: product-service
 
       - name: Run Snyk Docker Scan (User Service)
-        run: snyk container test user-service:latest --file=user-service/Dockerfile
+        run: snyk container test user-service:latest --file=Dockerfile
+        working-directory: user-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk Docker Scan (Product Service)
-        run: snyk container test product-service:latest --file=product-service/Dockerfile
+        run: snyk container test product-service:latest --file=Dockerfile
+        working-directory: product-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
