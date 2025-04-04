@@ -1,4 +1,4 @@
-name: Snyk Security Scan
+name: Security Scan with Snyk
 
 on:
   push:
@@ -10,24 +10,46 @@ on:
 
 jobs:
   security:
+    name: Run Snyk Security Scan
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '18'
 
-      - name: Install Dependencies
+      - name: Install Dependencies (User Service)
+        working-directory: ./user-service
         run: npm install
 
-      - name: Install Snyk CLI
-        run: npm install -g snyk
+      - name: Install Dependencies (Product Service)
+        working-directory: ./product-service
+        run: npm install
 
-      - name: Authenticate Snyk
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk Security Scan (User Service)
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+          working-directory: ./user-service
 
-      - name: Run Snyk to check for vulnerabilities
-        run: snyk test
+      - name: Run Snyk Security Scan (Product Service)
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+          working-directory: ./product-service
+
+      - name: Run Snyk Container Security Scan
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: shabry967/user-auth-service:latest
+          args: --severity-threshold=high
