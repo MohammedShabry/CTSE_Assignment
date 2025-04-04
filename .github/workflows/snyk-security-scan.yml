@@ -22,34 +22,24 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Dependencies (User Service)
-        working-directory: ./user-service
-        run: npm install
+      - name: Install Snyk CLI
+        run: npm install -g snyk
 
-      - name: Install Dependencies (Product Service)
-        working-directory: ./product-service
-        run: npm install
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
+      # Scan User Service
       - name: Run Snyk Security Scan (User Service)
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          working-directory: ./user-service
+        run: |
+          cd user-service
+          snyk test --severity-threshold=high
 
+      # Scan Product Service
       - name: Run Snyk Security Scan (Product Service)
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          working-directory: ./product-service
+        run: |
+          cd product-service
+          snyk test --severity-threshold=high
 
+      # Scan Docker Image (if applicable)
       - name: Run Snyk Container Security Scan
-        uses: snyk/actions/docker@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: shabry967/user-auth-service:latest
-          args: --severity-threshold=high
+        run: snyk container test shabry967/user-auth-service:latest
