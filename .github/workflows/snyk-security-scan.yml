@@ -16,6 +16,12 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
       - name: Install Dependencies (User Service)
         working-directory: user-service
         run: npm install
@@ -26,13 +32,13 @@ jobs:
 
       - name: Run Snyk Scan on User Service
         working-directory: user-service
-        run: npx snyk test
+        run: snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk Scan on Product Service
         working-directory: product-service
-        run: npx snyk test
+        run: snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -43,6 +49,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Build Docker Image (User Service)
         working-directory: user-service
