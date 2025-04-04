@@ -1,49 +1,65 @@
-name: Security Scan with Snyk
+name: CI/CD with Security Scans
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  security:
-    name: Run Snyk Security Scan
+  security-scan:
+    name: Snyk Security Scan
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
-      - name: Install Snyk CLI
-        run: npm install -g snyk
+      - name: Install Dependencies (User Service)
+        working-directory: user-service
+        run: npm install
 
-      - name: Authenticate Snyk
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Install Dependencies (Product Service)
+        working-directory: product-service
+        run: npm install
 
-      # Scan User Service and push results to Snyk Dashboard
-      - name: Run Snyk Security Scan (User Service)
+      - name: Run Snyk Scan on User Service
+        working-directory: user-service
+        run: npx snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Scan on Product Service
+        working-directory: product-service
+        run: npx snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  docker-scan:
+    name: Docker Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image (User Service)
+        working-directory: user-service
+        run: docker build -t user-service:latest .
+
+      - name: Build Docker Image (Product Service)
+        working-directory: product-service
+        run: docker build -t product-service:latest .
+
+      - name: Run Snyk Docker Scan (User Service)
         run: |
-          cd user-service
-          snyk test --severity-threshold=high
-          snyk monitor  # Sends results to Snyk Dashboard
+          docker save user-service:latest | snyk container test --file=user-service/Dockerfile --platform=linux/amd64
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Scan Product Service and push results to Snyk Dashboard
-      - name: Run Snyk Security Scan (Product Service)
+      - name: Run Snyk Docker Scan (Product Service)
         run: |
-          cd product-service
-          snyk test --severity-threshold=high
-          snyk monitor  # Sends results to Snyk Dashboard
-
-      # Scan Docker Image and push results to Snyk Dashboard
-      - name: Run Snyk Container Security Scan
-        run: |
-          snyk container test shabry967/user-auth-service:latest
-          snyk container monitor shabry967/user-auth-service:latest  # Pushes results to Snyk Dashboard
+          docker save product-service:latest | snyk container test --file=product-service/Dockerfile --platform=linux/amd64
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
