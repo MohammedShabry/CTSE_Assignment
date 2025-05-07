@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+//add user
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -13,6 +14,7 @@ exports.register = async (req, res) => {
   }
 };
 
+//user login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -23,8 +25,10 @@ exports.login = async (req, res) => {
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
-};//fyrtyr
+};
 
+
+//get user
 exports.getProfile = async (req, res) => {
   const user = await User.findById(req.user.userId).select('-password');
   res.json(user);
