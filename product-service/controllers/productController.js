@@ -7,7 +7,7 @@ exports.getAllProducts = async (req, res) => {
     res.json(products);
   } catch (err) {
     res.status(500).send('Server Error');
-  }//hyt
+  }//hytssds
 };
 
 //create products
