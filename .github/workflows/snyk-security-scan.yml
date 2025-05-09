@@ -82,3 +82,4 @@ jobs:
         working-directory: product-service
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
